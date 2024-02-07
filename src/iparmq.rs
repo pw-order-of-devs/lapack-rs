@@ -1,12 +1,10 @@
-use crate::errors::LapackError;
-
 /// IPARMQ
 ///
 /// [Original] Online HTML documentation available at
 /// `http://www.netlib.org/lapack/explore-html/`
 ///
 /// # Definition
-/// `fn iparmq(ispec: i32, name: &str, opts: &str, n: i32, ilo: i32, ihi: i32, lwork: i32) -> Result<i32, LapackError>`
+/// `fn iparmq(ispec: i32, name: &str, opts: &str, n: i32, ilo: i32, ihi: i32, lwork: i32) -> i32`
 ///
 /// # Arguments
 /// * `ispec: i32`
@@ -24,8 +22,7 @@ use crate::errors::LapackError;
 /// * `lwork: i32`
 /// The amount of workspace available.
 ///
-/// # Returns
-/// `Result<i32, LapackError>` Result type returning i32 on success and LapackError on failure.
+/// # Returns `i32`.
 ///
 /// # Further Details
 /// Little is known about how best to choose these parameters.
@@ -40,7 +37,7 @@ pub(crate) fn iparmq(
     ilo: i32,
     ihi: i32,
     lwork: i32,
-) -> Result<i32, LapackError> {
+) -> i32 {
     let inmin = 12;
     let inwin = 13;
     let inibl = 14;
@@ -70,18 +67,17 @@ pub(crate) fn iparmq(
     }
 
     match ispec {
-        _ if ispec == inmin => Ok(nmin),
-        _ if ispec == inibl => Ok(nibble),
-        _ if ispec == ishfts => Ok(ns),
+        _ if ispec == inmin => nmin,
+        _ if ispec == inibl => nibble,
+        _ if ispec == ishfts => ns,
         _ if ispec == inwin => {
-            if nh < knwswp { Ok(ns) }
-            else { Ok(3 * ns / 2) }
+            if nh < knwswp { ns }
+            else { 3 * ns / 2 }
         },
         _ if ispec == iacc22 => {
             let mut result = 0;
             let mut subnam = name.to_string();
-            let ic = subnam.chars().next()
-                .ok_or(LapackError::CannotBeEmpty { param: "name" })? as u32;
+            let ic = subnam.chars().next().unwrap() as u32;
             let iz = 'Z' as u32;
             if iz == 90 || iz == 122 {
                 // ASCII character set
@@ -124,18 +120,18 @@ pub(crate) fn iparmq(
 
             if &subnam[1..6] == "GGHRD" || &subnam[1..6] == "GGHD3" {
                 result = 1;
-                if nh >= k22min { return Ok(2) }
+                if nh >= k22min { return 2 }
             } else if &subnam[3..6] == "EXC" {
-                if nh >= kacmin { return Ok(1) }
-                else if nh >= k22min { return Ok(2) }
+                if nh >= kacmin { return 1 }
+                else if nh >= k22min { return 2 }
             } else if &subnam[1..6] == "HSEQR" || &subnam[1..5] == "LAQR" {
-                if ns >= kacmin { return Ok(1) }
-                else if ns >= k22min { return Ok(2) }
+                if ns >= kacmin { return 1 }
+                else if ns >= k22min { return 2 }
             }
-            return Ok(result)
+            return result
         },
-        _ if ispec == icost => Ok(rcost),
-        _ => Ok(-1),
+        _ if ispec == icost => rcost,
+        _ => -1,
     }
 }
 
@@ -143,18 +139,17 @@ pub(crate) fn iparmq(
 mod tests {
     use super::iparmq;
     use rstest::rstest;
-    use crate::errors::LapackError;
 
     #[rstest]
-    #[case(12, "test", "test", 10, 5, 5, 10, Ok(75))]
-    #[case(14, "test", "test", 20, 10, 10, 15, Ok(14))]
-    #[case(18, "test", "test", 60, 30, 30, 35, Ok(-1))]
-    #[case(15, "CGGHRD", "test", 30, 15, 15, 20, Ok(2))]
-    #[case(16, "DGGHRD", "test", 40, 20, 20, 25, Ok(1))]
-    #[case(17, "CHSEQR", "test", 50, 25, 25, 30, Ok(10))]
-    #[case(15, "CTGEXC", "test", 70, 35, 35, 40, Ok(2))]
-    #[case(16, "CLAQR0", "test", 80, 40, 40, 45, Ok(0))]
-    #[case(17, "CHSEQR", "test", 90, 45, 45, 50, Ok(10))]
+    #[case(12, "test", "test", 10, 5, 5, 10, 75)]
+    #[case(14, "test", "test", 20, 10, 10, 15, 14)]
+    #[case(18, "test", "test", 60, 30, 30, 35, -1)]
+    #[case(15, "CGGHRD", "test", 30, 15, 15, 20, 2)]
+    #[case(16, "DGGHRD", "test", 40, 20, 20, 25, 1)]
+    #[case(17, "CHSEQR", "test", 50, 25, 25, 30, 10)]
+    #[case(15, "CTGEXC", "test", 70, 35, 35, 40, 2)]
+    #[case(16, "CLAQR0", "test", 80, 40, 40, 45, 0)]
+    #[case(17, "CHSEQR", "test", 90, 45, 45, 50, 10)]
     fn test_iparmq(
         #[case] ispec: i32,
         #[case] name: &str,
@@ -163,7 +158,7 @@ mod tests {
         #[case] ilo: i32,
         #[case] ihi: i32,
         #[case] lwork: i32,
-        #[case] expected: Result<i32, LapackError>,
+        #[case] expected: i32,
     ) {
         assert_eq!(expected, iparmq(ispec, name, opts, n, ilo, ihi, lwork));
     }

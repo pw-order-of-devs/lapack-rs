@@ -1,4 +1,3 @@
-use crate::errors::LapackError;
 use crate::ieeeck::ieeeck;
 use crate::iparmq::iparmq;
 
@@ -8,7 +7,7 @@ use crate::iparmq::iparmq;
 /// `http://www.netlib.org/lapack/explore-html/`
 ///
 /// # Definition
-/// `fn ilaenv(ispec: i32, name: &str, opts: &str, n1: i32, n2: i32, n3: i32, n4: i32) -> Result<i32, LapackError>`
+/// `fn ilaenv(ispec: i32, name: &str, opts: &str, n1: i32, n2: i32, n3: i32, n4: i32) -> i32`
 ///
 /// # Arguments
 /// * `ispec: i32`
@@ -25,7 +24,7 @@ use crate::iparmq::iparmq;
 /// Problem dimensions for the subroutine NAME; these may not all be required.
 ///
 /// # Returns
-/// `Result<i32, LapackError>` Result type returning i32 on success and LapackError on failure.
+/// `i32`
 ///
 /// # Further Details
 /// The following conventions have been used when calling ILAENV from the
@@ -48,7 +47,7 @@ pub(crate) fn ilaenv(
     n2: i32,
     n3: i32,
     n4: i32,
-) -> Result<i32, LapackError> {
+) -> i32 {
     match ispec {
         1..=3 => {
             let mut subnam = name.to_string();
@@ -89,7 +88,7 @@ pub(crate) fn ilaenv(
                     }
                 }
             } else if iz == 218 || iz == 250 {
-                // Prime machines: ASCII + Ok(128
+                // Prime machines: ASCII + 128
                 if ic >= 225 && ic <= 250 {
                     let new_char = char::from_u32(ic - 32).unwrap();
                     subnam.replace_range(0..1, &new_char.to_string());
@@ -108,7 +107,7 @@ pub(crate) fn ilaenv(
             let cname = c1 == 'C' || c1 == 'Z';
 
             if !(cname || sname) {
-                return Ok(1);
+                return 1;
             }
 
             let c2: String = subnam.chars().skip(1).take(2).collect();
@@ -116,110 +115,106 @@ pub(crate) fn ilaenv(
             let c4: String = c3.chars().skip(1).take(2).collect();
             let twostage = subnam.len() >= 11 && subnam.chars().nth(10).unwrap() == '2';
 
-            println!("{c2}");
-            println!("{c3}");
-            println!("{c4}");
             match ispec {
                 1 => match (c2.as_str(), c3.as_str()) {
                     _ if (c2 == "LA" && subnam.chars().skip(1).take(5).collect::<String>() == "LAORH")
-                        || ((c2 == "SY" || c2 == "HE") && c3 == "TRF" && twostage) => Ok(192),
-                    _ if (c2 == "SY" || c2 == "HE") && c3 == "TRF" && !twostage => Ok(64),
-                    ("GE", "QRF") | ("GE", "RQF") | ("GE", "LQF") | ("GE", "QLF") | ("GE", "HRD") | ("GE", "BRD") => Ok(32),
-                    _ if c2 == "GE" && subnam.chars().skip(3).take(4).collect::<String>() == "QP3RK" => Ok(32),
+                        || ((c2 == "SY" || c2 == "HE") && c3 == "TRF" && twostage) => 192,
+                    _ if (c2 == "SY" || c2 == "HE") && c3 == "TRF" && !twostage => 64,
+                    ("GE", "QRF") | ("GE", "RQF") | ("GE", "LQF") | ("GE", "QLF") | ("GE", "HRD") | ("GE", "BRD") => 32,
+                    _ if c2 == "GE" && subnam.chars().skip(3).take(4).collect::<String>() == "QP3RK" => 32,
                     _ if (c2 == "OR" && sname) || (c2 == "UN" && cname)
                         && (c3.starts_with('G') || c3.starts_with('M'))
-                        && ["QR", "RQ", "LQ", "QL", "HR", "TR", "BR"].contains(&c4.as_str()) => Ok(32),
-                    ("GB", "TRF") | ("PB", "TRF") if n4 > 64 || n2 > 64 => Ok(32),
-                    ("TR", "TRI") | ("TR", "EVC") => Ok(64),
-                    ("TR", "SYL") if sname => Ok(std::cmp::min(std::cmp::max(48, (std::cmp::min(n1, n2) * 16) / 100), 240)),
-                    ("TR", "SYL") if !sname => Ok(std::cmp::min(std::cmp::max(24, (std::cmp::min(n1, n2) * 8) / 100), 80)),
-                    ("LA", "UUM") | ("LA", "TRS") => Ok(64),
-                    ("ST", "EBZ") if sname => Ok(1),
-                    ("GG", _) if c3 == "HD3" => Ok(32),
-                    _ => Ok(1),
+                        && ["QR", "RQ", "LQ", "QL", "HR", "TR", "BR"].contains(&c4.as_str()) => 32,
+                    ("GB", "TRF") | ("PB", "TRF") if n4 > 64 || n2 > 64 => 32,
+                    ("TR", "TRI") | ("TR", "EVC") => 64,
+                    ("TR", "SYL") if sname => std::cmp::min(std::cmp::max(48, (std::cmp::min(n1, n2) * 16) / 100), 240),
+                    ("TR", "SYL") if !sname => std::cmp::min(std::cmp::max(24, (std::cmp::min(n1, n2) * 8) / 100), 80),
+                    ("LA", "UUM") | ("LA", "TRS") => 64,
+                    ("ST", "EBZ") if sname => 1,
+                    ("GG", _) if c3 == "HD3" => 32,
+                    _ => 1,
                 },
                 2 => match (c2.as_str(), c3.as_str()) {
-                    ("GE", "QRF") | ("GE", "RQF") | ("GE", "LQF") | ("GE", "QLF") | ("GE", "HRD") | ("GE", "BRD") => Ok(2),
-                    _ if c2 == "GE" && subnam.chars().skip(3).take(4).collect::<String>() == "QP3RK" => Ok(2),
-                    ("SY", "TRF") if sname || cname => Ok(8),
-                    ("SY", "TRD") | ("HE", "TRD") if sname || cname => Ok(2),
+                    ("GE", "QRF") | ("GE", "RQF") | ("GE", "LQF") | ("GE", "QLF") | ("GE", "HRD") | ("GE", "BRD") => 2,
+                    _ if c2 == "GE" && subnam.chars().skip(3).take(4).collect::<String>() == "QP3RK" => 2,
+                    ("SY", "TRF") if sname || cname => 8,
+                    ("SY", "TRD") | ("HE", "TRD") if sname || cname => 2,
                     _ if (c2 == "OR" && sname) || (c2 == "UN" && cname) => {
                         if c3.starts_with('G') || c3.starts_with('M')
-                            && ["QR", "RQ", "LQ", "QL", "HR", "TR", "BR"].contains(&c4.as_str()) { Ok(2) }
-                        else { Ok(1) }
+                            && ["QR", "RQ", "LQ", "QL", "HR", "TR", "BR"].contains(&c4.as_str()) { 2 }
+                        else { 1 }
                     },
-                    ("GG", _) if c3 == "HD3" => Ok(2),
-                    _ => Ok(2),
+                    ("GG", _) if c3 == "HD3" => 2,
+                    _ => 2,
                 },
                 3 => match (c2.as_str(), c3.as_str()) {
-                    ("GE", "QRF") | ("GE", "RQF") | ("GE", "LQF") | ("GE", "QLF") | ("GE", "HRD") | ("GE", "BRD") => Ok(128),
-                    _ if c2 == "GE" && subnam.chars().skip(3).take(4).collect::<String>() == "QP3RK" => Ok(128),
-                    ("SY", "TRD") | ("HE", "TRD") if sname || cname => Ok(32),
-                    ("GG", _) if c3 == "HD3" => Ok(128),
+                    ("GE", "QRF") | ("GE", "RQF") | ("GE", "LQF") | ("GE", "QLF") | ("GE", "HRD") | ("GE", "BRD") => 128,
+                    _ if c2 == "GE" && subnam.chars().skip(3).take(4).collect::<String>() == "QP3RK" => 128,
+                    ("SY", "TRD") | ("HE", "TRD") if sname || cname => 32,
+                    ("GG", _) if c3 == "HD3" => 128,
                     _ if (c2 == "OR" && sname) || (c2 == "UN" && cname) =>
                         if c3.starts_with('G')
-                            && ["QR", "RQ", "LQ", "QL", "HR", "TR", "BR"].contains(&c4.as_str()) { Ok(128) }
-                        else { Ok(0) },
-                    _ => Ok(0),
+                            && ["QR", "RQ", "LQ", "QL", "HR", "TR", "BR"].contains(&c4.as_str()) { 128 }
+                        else { 0 },
+                    _ => 0,
                 },
-                _ => { Ok(-1) },
+                _ => { -1 },
             }
         },
-        4 => Ok(6),
-        5 => Ok(2),
-        6 => Ok((n1.min(n2) as f64 * 1.6).round() as i32),
-        7 => Ok(1),
-        8 => Ok(50),
-        9 => Ok(25),
-        10 => Ok(ieeeck(1, 0.0, 1.0)),
-        11 => Ok(ieeeck(0, 0.0, 1.0)),
+        4 => 6,
+        5 => 2,
+        6 => (n1.min(n2) as f64 * 1.6).round() as i32,
+        7 => 1,
+        8 => 50,
+        9 => 25,
+        10 => ieeeck(1, 0.0, 1.0),
+        11 => ieeeck(0, 0.0, 1.0),
         12..=17 => iparmq(ispec, name, opts, n1, n2, n3, n4),
-        _ => Err(LapackError::InvalidIspecValue { value: ispec }),
+        _ => -1,
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::errors::LapackError;
     use rstest::rstest;
 
     #[rstest]
-    #[case(-1, "CGGHRD", "test", 0, 0, 0, 0, Err(LapackError::InvalidIspecValue { value: -1 }))]
-    #[case(0, "CGGHRD", "test", 0, 0, 0, 0, Err(LapackError::InvalidIspecValue { value: 0 }))]
-    #[case(1, "CGGHRD", "test", 0, 0, 0, 0, Ok(1))]
-    #[case(1, "DGGHRD", "test", 0, 0, 0, 0, Ok(1))]
-    #[case(1, "SGBTRF", "test", 0, 128, 0, 128, Ok(32))]
-    #[case(1, "DGBTRF", "test", 0, 128, 0, 128, Ok(32))]
-    #[case(1, "DGEQRF", "test", 0, 0, 0, 0, Ok(32))]
-    #[case(1, "SGEQRF", "test", 0, 0, 0, 0, Ok(32))]
-    #[case(2, "CGGHRD", "test", 0, 0, 0, 0, Ok(2))]
-    #[case(2, "DGGHRD", "test", 0, 0, 0, 0, Ok(2))]
-    #[case(2, "SGBTRF", "test", 0, 0, 0, 0, Ok(2))]
-    #[case(2, "DGBTRF", "test", 0, 0, 0, 0, Ok(2))]
-    #[case(2, "DGEQRF", "test", 0, 0, 0, 0, Ok(2))]
-    #[case(2, "SGEQRF", "test", 0, 0, 0, 0, Ok(2))]
-    #[case(3, "CGGHRD", "test", 0, 0, 0, 0, Ok(0))]
-    #[case(3, "DGGHRD", "test", 0, 0, 0, 0, Ok(0))]
-    #[case(3, "SGBTRF", "test", 0, 0, 0, 0, Ok(0))]
-    #[case(3, "DGBTRF", "test", 0, 0, 0, 0, Ok(0))]
-    #[case(3, "DGEQRF", "test", 0, 0, 0, 0, Ok(128))]
-    #[case(3, "SGEQRF", "test", 0, 0, 0, 0, Ok(128))]
-    #[case(4, "CGGHRD", "test", 2, 3, 0, 0, Ok(6))]
-    #[case(5, "CGGHRD", "test", 2, 3, 0, 0, Ok(2))]
-    #[case(6, "CGGHRD", "test", 2, 3, 0, 0, Ok(3))]
-    #[case(7, "CGGHRD", "test", 2, 3, 0, 0, Ok(1))]
-    #[case(8, "CGGHRD", "test", 2, 3, 0, 0, Ok(50))]
-    #[case(9, "CGGHRD", "test", 2, 3, 0, 0, Ok(25))]
-    #[case(10, "CGGHRD", "test", 0, 0, 0, 0, Ok(0))]
-    #[case(11, "CGGHRD", "test", 0, 0, 0, 0, Ok(1))]
-    #[case(12, "CGGHRD", "test", 2, 3, 4, 5, Ok(75))]
-    #[case(13, "CGGHRD", "test", 2, 3, 4, 5, Ok(2))]
-    #[case(14, "CGGHRD", "test", 2, 3, 4, 5, Ok(14))]
-    #[case(15, "CGGHRD", "test", 2, 3, 4, 5, Ok(2))]
-    #[case(16, "CGGHRD", "test", 2, 3, 4, 5, Ok(1))]
-    #[case(17, "CGGHRD", "test", 2, 3, 4, 5, Ok(10))]
-    #[case(18, "CGGHRD", "test", 0, 0, 0, 0, Err(LapackError::InvalidIspecValue { value: 18 }))]
+    #[case(-1, "CGGHRD", "test", 0, 0, 0, 0, -1)]
+    #[case(0, "CGGHRD", "test", 0, 0, 0, 0, -1)]
+    #[case(1, "CGGHRD", "test", 0, 0, 0, 0, 1)]
+    #[case(1, "DGGHRD", "test", 0, 0, 0, 0, 1)]
+    #[case(1, "SGBTRF", "test", 0, 128, 0, 128, 32)]
+    #[case(1, "DGBTRF", "test", 0, 128, 0, 128, 32)]
+    #[case(1, "DGEQRF", "test", 0, 0, 0, 0, 32)]
+    #[case(1, "SGEQRF", "test", 0, 0, 0, 0, 32)]
+    #[case(2, "CGGHRD", "test", 0, 0, 0, 0, 2)]
+    #[case(2, "DGGHRD", "test", 0, 0, 0, 0, 2)]
+    #[case(2, "SGBTRF", "test", 0, 0, 0, 0, 2)]
+    #[case(2, "DGBTRF", "test", 0, 0, 0, 0, 2)]
+    #[case(2, "DGEQRF", "test", 0, 0, 0, 0, 2)]
+    #[case(2, "SGEQRF", "test", 0, 0, 0, 0, 2)]
+    #[case(3, "CGGHRD", "test", 0, 0, 0, 0, 0)]
+    #[case(3, "DGGHRD", "test", 0, 0, 0, 0, 0)]
+    #[case(3, "SGBTRF", "test", 0, 0, 0, 0, 0)]
+    #[case(3, "DGBTRF", "test", 0, 0, 0, 0, 0)]
+    #[case(3, "DGEQRF", "test", 0, 0, 0, 0, 128)]
+    #[case(3, "SGEQRF", "test", 0, 0, 0, 0, 128)]
+    #[case(4, "CGGHRD", "test", 2, 3, 0, 0, 6)]
+    #[case(5, "CGGHRD", "test", 2, 3, 0, 0, 2)]
+    #[case(6, "CGGHRD", "test", 2, 3, 0, 0, 3)]
+    #[case(7, "CGGHRD", "test", 2, 3, 0, 0, 1)]
+    #[case(8, "CGGHRD", "test", 2, 3, 0, 0, 50)]
+    #[case(9, "CGGHRD", "test", 2, 3, 0, 0, 25)]
+    #[case(10, "CGGHRD", "test", 0, 0, 0, 0, 0)]
+    #[case(11, "CGGHRD", "test", 0, 0, 0, 0, 1)]
+    #[case(12, "CGGHRD", "test", 2, 3, 4, 5, 75)]
+    #[case(13, "CGGHRD", "test", 2, 3, 4, 5, 2)]
+    #[case(14, "CGGHRD", "test", 2, 3, 4, 5, 14)]
+    #[case(15, "CGGHRD", "test", 2, 3, 4, 5, 2)]
+    #[case(16, "CGGHRD", "test", 2, 3, 4, 5, 1)]
+    #[case(17, "CGGHRD", "test", 2, 3, 4, 5, 10)]
+    #[case(18, "CGGHRD", "test", 0, 0, 0, 0, -1)]
     fn test_ispec_out_of_range(
         #[case] ispec: i32,
         #[case] name: &str,
@@ -228,7 +223,7 @@ mod tests {
         #[case] n2: i32,
         #[case] n3: i32,
         #[case] n4: i32,
-        #[case] expected: Result<i32, LapackError>,
+        #[case] expected: i32,
     ) {
         assert_eq!(expected, ilaenv(ispec, name, opts, n1, n2, n3, n4));
     }

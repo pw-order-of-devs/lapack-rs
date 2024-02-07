@@ -13,10 +13,10 @@
 /// 0: Verify infinity arithmetic only.
 /// 1: Verify infinity and NaN arithmetic.
 ///  *  `zero: f32`
-/// Must contain the value 0..
+/// Must contain the value 0.
 /// This is passed to prevent the compiler from optimizing away this code.
 ///  *  `one: f32`
-/// Must contain the value 1..
+/// Must contain the value 1.
 /// This is passed to prevent the compiler from optimizing away this code.
 ///
 /// # Returns

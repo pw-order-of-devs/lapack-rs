@@ -3,24 +3,15 @@
 /// [Original] Online HTML documentation available at
 /// `http://www.netlib.org/lapack/explore-html/`
 ///
-/// # Definition
-/// `fn iparmq(ispec: i32, name: &str, opts: &str, n: i32, ilo: i32, ihi: i32, lwork: i32) -> i32`
-///
 /// # Arguments
 /// * `ispec: i32`
 /// Specifies which tunable parameter IPARMQ should return.
 /// For more detail on meaning of exact values refer to original documentation.
 /// * `name: &str`
 /// Name of the calling subroutine.
-/// * `opts: &str`
-/// This is a concatenation of the string arguments to TTQRE.
-/// * `n: i32`
-/// N is the order of the Hessenberg matrix H.
 /// * `ilo: i32`
 /// * `ihi: i32`
 /// It is assumed that H is already upper triangular in rows and columns 1:ILO-1 and IHI+1:N.
-/// * `lwork: i32`
-/// The amount of workspace available.
 ///
 /// # Returns `i32`.
 ///
@@ -32,11 +23,8 @@
 pub(crate) fn iparmq(
     ispec: i32,
     name: &str,
-    opts: &str,
-    n: i32,
     ilo: i32,
     ihi: i32,
-    lwork: i32,
 ) -> i32 {
     let inmin = 12;
     let inwin = 13;
@@ -141,25 +129,22 @@ mod tests {
     use rstest::rstest;
 
     #[rstest]
-    #[case(12, "test", "test", 10, 5, 5, 10, 75)]
-    #[case(14, "test", "test", 20, 10, 10, 15, 14)]
-    #[case(18, "test", "test", 60, 30, 30, 35, -1)]
-    #[case(15, "CGGHRD", "test", 30, 15, 15, 20, 2)]
-    #[case(16, "DGGHRD", "test", 40, 20, 20, 25, 1)]
-    #[case(17, "CHSEQR", "test", 50, 25, 25, 30, 10)]
-    #[case(15, "CTGEXC", "test", 70, 35, 35, 40, 2)]
-    #[case(16, "CLAQR0", "test", 80, 40, 40, 45, 0)]
-    #[case(17, "CHSEQR", "test", 90, 45, 45, 50, 10)]
+    #[case(12, "test", 5, 5, 75)]
+    #[case(14, "test", 10, 10, 14)]
+    #[case(18, "test", 30, 30, -1)]
+    #[case(15, "CGGHRD", 15, 15, 2)]
+    #[case(16, "DGGHRD", 20, 20, 1)]
+    #[case(17, "CHSEQR", 25, 25, 10)]
+    #[case(15, "CTGEXC", 35, 35, 2)]
+    #[case(16, "CLAQR0", 40, 40, 0)]
+    #[case(17, "CHSEQR", 45, 45, 10)]
     fn test_iparmq(
         #[case] ispec: i32,
         #[case] name: &str,
-        #[case] opts: &str,
-        #[case] n: i32,
         #[case] ilo: i32,
         #[case] ihi: i32,
-        #[case] lwork: i32,
         #[case] expected: i32,
     ) {
-        assert_eq!(expected, iparmq(ispec, name, opts, n, ilo, ihi, lwork));
+        assert_eq!(expected, iparmq(ispec, name, ilo, ihi));
     }
 }

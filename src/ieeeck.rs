@@ -3,9 +3,6 @@
 /// [Original] Online HTML documentation available at
 /// `http://www.netlib.org/lapack/explore-html/`
 ///
-/// # Definition
-/// `fn ieeeck(ispec: i32, zero: f32, one: f32) -> i32`
-///
 /// # Arguments
 ///  *  `ispec: i32`
 /// Specifies whether to test just for infinity arithmetic
@@ -23,7 +20,7 @@
 /// `i32`
 /// 0: Arithmetic failed to produce the correct answers.
 /// 1: Arithmetic produced the correct answers.
-pub(crate) fn ieeeck(
+pub fn ieeeck(
     ispec: i32,
     zero: f64,
     one: f64,

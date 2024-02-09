@@ -6,17 +6,12 @@ use crate::iparmq::iparmq;
 /// [Original] Online HTML documentation available at
 /// `http://www.netlib.org/lapack/explore-html/`
 ///
-/// # Definition
-/// `fn ilaenv(ispec: i32, name: &str, opts: &str, n1: i32, n2: i32, n3: i32, n4: i32) -> i32`
-///
 /// # Arguments
 /// * `ispec: i32`
 /// Specifies the parameter to be returned as the value of ILAENV.
 /// For more detail on meaning of exact values refer to original documentation.
 /// * `name: &str`
 /// The name of the calling subroutine, in either upper case or lower case.
-/// * `opts: &str`
-/// The character options to the subroutine NAME, concatenated into a single character string.
 /// * `n1: i32`
 /// * `n2: i32`
 /// * `n3: i32`
@@ -42,7 +37,6 @@ use crate::iparmq::iparmq;
 pub(crate) fn ilaenv(
     ispec: i32,
     name: &str,
-    opts: &str,
     n1: i32,
     n2: i32,
     n3: i32,
@@ -169,7 +163,7 @@ pub(crate) fn ilaenv(
         9 => 25,
         10 => ieeeck(1, 0.0, 1.0),
         11 => ieeeck(0, 0.0, 1.0),
-        12..=17 => iparmq(ispec, name, opts, n1, n2, n3, n4),
+        12..=17 => iparmq(ispec, name, n2, n3),
         _ => -1,
     }
 }
@@ -180,51 +174,50 @@ mod tests {
     use rstest::rstest;
 
     #[rstest]
-    #[case(-1, "CGGHRD", "test", 0, 0, 0, 0, -1)]
-    #[case(0, "CGGHRD", "test", 0, 0, 0, 0, -1)]
-    #[case(1, "CGGHRD", "test", 0, 0, 0, 0, 1)]
-    #[case(1, "DGGHRD", "test", 0, 0, 0, 0, 1)]
-    #[case(1, "SGBTRF", "test", 0, 128, 0, 128, 32)]
-    #[case(1, "DGBTRF", "test", 0, 128, 0, 128, 32)]
-    #[case(1, "DGEQRF", "test", 0, 0, 0, 0, 32)]
-    #[case(1, "SGEQRF", "test", 0, 0, 0, 0, 32)]
-    #[case(2, "CGGHRD", "test", 0, 0, 0, 0, 2)]
-    #[case(2, "DGGHRD", "test", 0, 0, 0, 0, 2)]
-    #[case(2, "SGBTRF", "test", 0, 0, 0, 0, 2)]
-    #[case(2, "DGBTRF", "test", 0, 0, 0, 0, 2)]
-    #[case(2, "DGEQRF", "test", 0, 0, 0, 0, 2)]
-    #[case(2, "SGEQRF", "test", 0, 0, 0, 0, 2)]
-    #[case(3, "CGGHRD", "test", 0, 0, 0, 0, 0)]
-    #[case(3, "DGGHRD", "test", 0, 0, 0, 0, 0)]
-    #[case(3, "SGBTRF", "test", 0, 0, 0, 0, 0)]
-    #[case(3, "DGBTRF", "test", 0, 0, 0, 0, 0)]
-    #[case(3, "DGEQRF", "test", 0, 0, 0, 0, 128)]
-    #[case(3, "SGEQRF", "test", 0, 0, 0, 0, 128)]
-    #[case(4, "CGGHRD", "test", 2, 3, 0, 0, 6)]
-    #[case(5, "CGGHRD", "test", 2, 3, 0, 0, 2)]
-    #[case(6, "CGGHRD", "test", 2, 3, 0, 0, 3)]
-    #[case(7, "CGGHRD", "test", 2, 3, 0, 0, 1)]
-    #[case(8, "CGGHRD", "test", 2, 3, 0, 0, 50)]
-    #[case(9, "CGGHRD", "test", 2, 3, 0, 0, 25)]
-    #[case(10, "CGGHRD", "test", 0, 0, 0, 0, 0)]
-    #[case(11, "CGGHRD", "test", 0, 0, 0, 0, 1)]
-    #[case(12, "CGGHRD", "test", 2, 3, 4, 5, 75)]
-    #[case(13, "CGGHRD", "test", 2, 3, 4, 5, 2)]
-    #[case(14, "CGGHRD", "test", 2, 3, 4, 5, 14)]
-    #[case(15, "CGGHRD", "test", 2, 3, 4, 5, 2)]
-    #[case(16, "CGGHRD", "test", 2, 3, 4, 5, 1)]
-    #[case(17, "CGGHRD", "test", 2, 3, 4, 5, 10)]
-    #[case(18, "CGGHRD", "test", 0, 0, 0, 0, -1)]
+    #[case(-1, "CGGHRD", 0, 0, 0, 0, -1)]
+    #[case(0, "CGGHRD", 0, 0, 0, 0, -1)]
+    #[case(1, "CGGHRD", 0, 0, 0, 0, 1)]
+    #[case(1, "DGGHRD", 0, 0, 0, 0, 1)]
+    #[case(1, "SGBTRF", 0, 128, 0, 128, 32)]
+    #[case(1, "DGBTRF", 0, 128, 0, 128, 32)]
+    #[case(1, "DGEQRF", 0, 0, 0, 0, 32)]
+    #[case(1, "SGEQRF", 0, 0, 0, 0, 32)]
+    #[case(2, "CGGHRD", 0, 0, 0, 0, 2)]
+    #[case(2, "DGGHRD", 0, 0, 0, 0, 2)]
+    #[case(2, "SGBTRF", 0, 0, 0, 0, 2)]
+    #[case(2, "DGBTRF", 0, 0, 0, 0, 2)]
+    #[case(2, "DGEQRF", 0, 0, 0, 0, 2)]
+    #[case(2, "SGEQRF", 0, 0, 0, 0, 2)]
+    #[case(3, "CGGHRD", 0, 0, 0, 0, 0)]
+    #[case(3, "DGGHRD", 0, 0, 0, 0, 0)]
+    #[case(3, "SGBTRF", 0, 0, 0, 0, 0)]
+    #[case(3, "DGBTRF", 0, 0, 0, 0, 0)]
+    #[case(3, "DGEQRF", 0, 0, 0, 0, 128)]
+    #[case(3, "SGEQRF", 0, 0, 0, 0, 128)]
+    #[case(4, "CGGHRD", 2, 3, 0, 0, 6)]
+    #[case(5, "CGGHRD", 2, 3, 0, 0, 2)]
+    #[case(6, "CGGHRD", 2, 3, 0, 0, 3)]
+    #[case(7, "CGGHRD", 2, 3, 0, 0, 1)]
+    #[case(8, "CGGHRD", 2, 3, 0, 0, 50)]
+    #[case(9, "CGGHRD", 2, 3, 0, 0, 25)]
+    #[case(10, "CGGHRD", 0, 0, 0, 0, 0)]
+    #[case(11, "CGGHRD", 0, 0, 0, 0, 1)]
+    #[case(12, "CGGHRD", 2, 3, 4, 5, 75)]
+    #[case(13, "CGGHRD", 2, 3, 4, 5, 2)]
+    #[case(14, "CGGHRD", 2, 3, 4, 5, 14)]
+    #[case(15, "CGGHRD", 2, 3, 4, 5, 2)]
+    #[case(16, "CGGHRD", 2, 3, 4, 5, 1)]
+    #[case(17, "CGGHRD", 2, 3, 4, 5, 10)]
+    #[case(18, "CGGHRD", 0, 0, 0, 0, -1)]
     fn test_ispec_out_of_range(
         #[case] ispec: i32,
         #[case] name: &str,
-        #[case] opts: &str,
         #[case] n1: i32,
         #[case] n2: i32,
         #[case] n3: i32,
         #[case] n4: i32,
         #[case] expected: i32,
     ) {
-        assert_eq!(expected, ilaenv(ispec, name, opts, n1, n2, n3, n4));
+        assert_eq!(expected, ilaenv(ispec, name, n1, n2, n3, n4));
     }
 }

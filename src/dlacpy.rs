@@ -9,19 +9,7 @@
 ///
 /// # Arguments
 ///
-/// * `uplo` - Specifies the part of the matrix `A` to be copied to `B`.
-///   * 'U': Upper triangular part
-///   * 'L': Lower triangular part
-///   * Otherwise: All the matrix `A`
-///
-/// * `m` - The number of rows of the matrix `A`. `m` >= 0.
-///
-/// * `n` - The number of columns of the matrix `A`. `n` >= 0.
-///
-/// * `a` - The `m` by `n` matrix `A`. If `uplo` = 'U', only the upper triangle
-///   or trapezoid is accessed; if `uplo` = 'L', only the lower triangle or trapezoid is accessed.
-///
-/// * `b` - Output double precision array. On exit, `B` = `A` in the locations specified by `uplo`.
+/// For arguments definitions, please refer to the original documentation.
 pub fn dlacpy(
     uplo: char,
     m: usize,

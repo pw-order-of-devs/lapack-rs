@@ -6,34 +6,12 @@ use crate::iparmq::iparmq;
 /// [Original] Online HTML documentation available at
 /// `http://www.netlib.org/lapack/explore-html/`
 ///
+/// ILAENV is called to choose problem-dependent parameters for the local environment.
+/// See ISPEC for a description of the parameters.
+///
 /// # Arguments
-/// * `ispec: i32`
-/// Specifies the parameter to be returned as the value of ILAENV.
-/// For more detail on meaning of exact values refer to original documentation.
-/// * `name: &str`
-/// The name of the calling subroutine, in either upper case or lower case.
-/// * `n1: i32`
-/// * `n2: i32`
-/// * `n3: i32`
-/// * `n4: i32`
-/// Problem dimensions for the subroutine NAME; these may not all be required.
 ///
-/// # Returns
-/// `i32`
-///
-/// # Further Details
-/// The following conventions have been used when calling ILAENV from the
-/// LAPACK routines:
-/// 1) OPTS is a concatenation of all the character options to
-/// subroutine NAME, in the same order that they appear in the
-/// argument list for NAME, even if they are not used in determining
-/// the value of the parameter specified by ISPEC.
-/// 2) The problem dimensions N1, N2, N3, N4 are specified in the order
-/// that they appear in the argument list for NAME.  N1 is used
-/// first, N2 second, and so on, and unused problem dimensions are
-/// passed a value of -1.
-/// 3) The parameter value returned by ILAENV is checked for validity in
-/// the calling subroutine.
+/// For arguments definitions, please refer to the original documentation.
 pub(crate) fn ilaenv(
     ispec: i32,
     name: &str,

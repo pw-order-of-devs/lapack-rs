@@ -4,22 +4,8 @@
 /// `http://www.netlib.org/lapack/explore-html/`
 ///
 /// # Arguments
-///  *  `ispec: i32`
-/// Specifies whether to test just for infinity arithmetic
-/// or whether to test for infinity and NaN arithmetic.
-/// 0: Verify infinity arithmetic only.
-/// 1: Verify infinity and NaN arithmetic.
-///  *  `zero: f32`
-/// Must contain the value 0.
-/// This is passed to prevent the compiler from optimizing away this code.
-///  *  `one: f32`
-/// Must contain the value 1.
-/// This is passed to prevent the compiler from optimizing away this code.
 ///
-/// # Returns
-/// `i32`
-/// 0: Arithmetic failed to produce the correct answers.
-/// 1: Arithmetic produced the correct answers.
+/// For arguments definitions, please refer to the original documentation.
 pub fn ieeeck(
     ispec: i32,
     zero: f64,

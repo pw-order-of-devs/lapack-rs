@@ -18,10 +18,7 @@ use std::process;
 ///
 /// # Arguments
 ///
-/// * `srname` - SRNAME is a string The name of the routine which called XERBLA.
-///
-/// * `info` - INFO is an integer. The position of the invalid parameter in the parameter list of the calling routine.
-///
+/// For arguments definitions, please refer to the original documentation.
 pub fn xerbla(srname: &str, info: i32) {
     println!("** On entry to {} parameter number {} had an illegal value", srname, info);
     process::exit(1);

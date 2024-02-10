@@ -9,29 +9,7 @@
 ///
 /// # Arguments
 ///
-/// * `cmach` - Specifies the type of the machine parameter that DLAMCH is to return.
-///   * 'E' or 'e': DLAMCH returns the eps of the machine.
-///   * 'S' or 's': DLAMCH returns the sfmin of the machine.
-///   * 'B' or 'b': DLAMCH returns the base of the arithmetic of the machine.
-///   * 'P' or 'p': DLAMCH returns the eps * base.
-///   * 'N' or 'n': DLAMCH returns the t of the machine.
-///   * 'R' or 'r': DLAMCH returns the rnd of the machine.
-///   * 'M' or 'm': DLAMCH returns the emin of the machine.
-///   * 'U' or 'u': DLAMCH returns the rmin of the machine.
-///   * 'L' or 'l': DLAMCH returns the emax of the machine.
-///   * 'O' or 'o': DLAMCH returns the rmax of the machine.
-///
-/// The values returned by DLAMCH are as follows:
-/// * eps: relative machine precision
-/// * sfmin: safe minimum, such that 1/sfmin does not overflow
-/// * base: base of the machine
-/// * prec: eps * base
-/// * t: number of (base) digits in the mantissa
-/// * rnd: 1.0 when rounding occurs in addition, 0.0 otherwise
-/// * emin: minimum exponent before (gradual) underflow
-/// * rmin: underflow threshold - base^(emin - 1)
-/// * emax: largest exponent before overflow
-/// * rmax: overflow threshold - (base^emax) * (1 - eps)
+/// For arguments definitions, please refer to the original documentation.
 pub fn dlamch(cmach: char) -> f64 {
     // Parameters
     let one: f64 = 1.0;

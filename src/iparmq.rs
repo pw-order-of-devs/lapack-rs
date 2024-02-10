@@ -4,22 +4,8 @@
 /// `http://www.netlib.org/lapack/explore-html/`
 ///
 /// # Arguments
-/// * `ispec: i32`
-/// Specifies which tunable parameter IPARMQ should return.
-/// For more detail on meaning of exact values refer to original documentation.
-/// * `name: &str`
-/// Name of the calling subroutine.
-/// * `ilo: i32`
-/// * `ihi: i32`
-/// It is assumed that H is already upper triangular in rows and columns 1:ILO-1 and IHI+1:N.
 ///
-/// # Returns `i32`.
-///
-/// # Further Details
-/// Little is known about how best to choose these parameters.
-/// It is possible to use different values of the parameters for each of CHSEQR, DHSEQR, SHSEQR and ZHSEQR.
-///
-/// Further details are available in the original documentation.
+/// For arguments definitions, please refer to the original documentation.
 pub(crate) fn iparmq(
     ispec: i32,
     name: &str,

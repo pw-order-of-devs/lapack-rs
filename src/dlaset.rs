@@ -9,31 +9,7 @@
 ///
 /// # Arguments
 ///
-/// * `uplo` - Specifies the part of the matrix `A` to be set.
-///   * 'U': Upper triangular part is set; the strictly lower
-///          triangular part of `A` is not changed.
-///   * 'L': Lower triangular part is set; the strictly upper
-///          triangular part of `A` is not changed.
-///   * Otherwise:  All the matrix `A` is set.
-///
-/// * `m` - The number of rows of the matrix `A`. `m` >= 0.
-///
-/// * `n` - The number of columns of the matrix `A`. `n` >= 0.
-///
-/// * `alpha` - The constant to which the offdiagonal elements are to be set.
-///
-/// * `beta` - The constant to which the diagonal elements are to be set.
-///
-/// * `a` - Matrix `A`, dimension (lda,n).
-///   On exit, the leading m-by-n submatrix of `A` is set as follows:
-///
-///   if `uplo` = 'U', `A(i,j) = alpha`, 1 <= i <= j - 1, 1 <= j <= n,
-///
-///   if `uplo` = 'L', `A(i,j) = alpha`, j + 1 <= i <= m, 1 <= j <= n,
-///
-///   otherwise, `A(i,j) = alpha`, 1 <= i <= m, 1 <= j <= n, `i.ne.j`,
-///
-///   and, for all `uplo`, `A(i,i) = beta`, 1 <= i <= min(m,n).
+/// For arguments definitions, please refer to the original documentation.
 pub fn dlaset(
     uplo: char,
     m: usize,

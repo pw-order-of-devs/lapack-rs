@@ -71,7 +71,7 @@ mod tests {
     #[case('U', f64::MIN_POSITIVE)]
     #[case('L', f64::MAX_EXP as f64)]
     #[case('O', f64::MAX)]
-    fn dlamch_test(#[case] input: char, #[case] expected: f64) {
+    fn test_dlamch(#[case] input: char, #[case] expected: f64) {
         assert_eq!(dlamch(input), expected);
     }
 }

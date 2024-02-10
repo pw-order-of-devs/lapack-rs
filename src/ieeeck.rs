@@ -67,7 +67,7 @@ mod tests {
     #[case(1, 0., -1e20, 0)] // Combination Case: Underflow for very large negative value
     #[case(1, f64::NAN, 1., 0)] // NaN Arithmetic: NaN input produces NaN output
     #[case(1, 0., f64::NAN, 0)] // NaN Arithmetic: NaN input produces NaN output
-    fn ieeeck_test(
+    fn test_ieeeck(
         #[case] ispec: i32,
         #[case] zero: f64,
         #[case] one: f64,

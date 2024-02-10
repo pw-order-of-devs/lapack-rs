@@ -7,8 +7,6 @@
 ///
 /// Applies a plane rotation.
 ///
-/// The `drot` function applies a plane rotation.
-///
 /// # Arguments
 ///
 /// * `n` - Integer. The number of elements in input vector(s).

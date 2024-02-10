@@ -4,6 +4,7 @@ pub mod dlacpy;
 pub mod dlamch;
 pub mod dlanv2;
 pub mod dlapy2;
+pub mod dlarfg;
 pub mod dlaset;
 pub mod ieeeck;
 pub mod ilaenv;

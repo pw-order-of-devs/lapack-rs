@@ -10,26 +10,18 @@
 /// # Arguments
 ///
 /// For arguments definitions, please refer to the original documentation.
-pub fn dlamch(cmach: char) -> f64 {
+pub fn dlamch(
+    cmach: char,
+) -> f64 {
     // Parameters
     let one: f64 = 1.0;
     let zero: f64 = 0.0;
 
     // Local Scalars
-    let mut rnd: f64;
-    let mut eps: f64;
+    let eps = f64::EPSILON * 0.5;
     let mut sfmin: f64;
-    let mut small: f64;
-    let mut rmach: f64;
-
-    // Assume rounding, not chopping. Always.
-    rnd = one;
-
-    if one == rnd {
-        eps = f64::EPSILON * 0.5;
-    } else {
-        eps = f64::EPSILON;
-    }
+    let small: f64;
+    let rmach: f64;
 
     match cmach {
         'E' => rmach = eps,
@@ -45,7 +37,7 @@ pub fn dlamch(cmach: char) -> f64 {
         'B' => rmach = f64::RADIX as f64,
         'P' => rmach = eps * f64::RADIX as f64,
         'N' => rmach = f64::MANTISSA_DIGITS as f64,
-        'R' => rmach = rnd,
+        'R' => rmach = one,
         'M' => rmach = f64::MIN_EXP as f64,
         'U' => rmach = f64::MIN_POSITIVE,
         'L' => rmach = f64::MAX_EXP as f64,

@@ -1,3 +1,4 @@
+use crate::array::{AsFortranArray, FortranArray};
 use crate::blas::dnrm2::dnrm2;
 use crate::blas::dscal::dscal;
 use crate::dlamch::dlamch;
@@ -29,13 +30,15 @@ use crate::dlapy2::dlapy2;
 /// # Arguments
 ///
 /// For arguments definitions, please refer to the original documentation.
-pub fn dlarfg(
+pub fn dlarfg<X>(
     n: i32,
     alpha: &mut f64,
-    x: &mut Vec<f64>,
+    x: &mut X,
     incx: i32,
     mut tau: &mut f64,
-) {
+) where
+    X: AsFortranArray + From<FortranArray>,
+{
     if n <= 1 {
         *tau = 0.;
         return;

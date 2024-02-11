@@ -1,3 +1,5 @@
+use crate::array::{AsFortranArray, FortranArray};
+
 /// DLASET
 ///
 /// # Documentation
@@ -10,36 +12,41 @@
 /// # Arguments
 ///
 /// For arguments definitions, please refer to the original documentation.
-pub fn dlaset(
+pub fn dlaset<A>(
     uplo: char,
-    m: usize,
-    n: usize,
+    m: i32,
+    n: i32,
     alpha: f64,
     beta: f64,
-    a: &mut Vec<Vec<f64>>,
-) {
+    a: &mut A,
+) where
+    A: AsFortranArray + From<FortranArray>,
+{
+    let a_f = &mut a.to_fortran_array();
+
     match uplo {
-        'U' => for i in 0..n {
-            for j in i..m {
-                a[i][j] = alpha;
+        'U' => for i in 1..=n {
+            for j in i..=m {
+                a_f[(i, j)] = alpha;
             }
         }
-        'L' => for i in 0..n {
-            for j in 0..=i {
-                a[i][j] = alpha;
+        'L' => for i in 1..=n {
+            for j in 1..=i {
+                a_f[(i, j)] = alpha;
             }
         }
-        _ => for j in 0..n {
-            for i in 0..m {
-                a[i][j] = alpha;
+        _ => for j in 1..=n {
+            for i in 1..=m {
+                a_f[(i, j)] = alpha;
             }
         }
     }
 
-    let min_dimension = n.min(m);
-    for i in 0..min_dimension {
-        a[i][i] = beta;
+    for i in 1..=n.min(m) {
+        a_f[(i, i)] = beta;
     }
+
+    *a = A::from(a_f.clone());
 }
 
 #[cfg(test)]

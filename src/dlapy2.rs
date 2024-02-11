@@ -10,7 +10,10 @@
 /// # Arguments
 ///
 /// For arguments definitions, please refer to the original documentation.
-pub fn dlapy2(x: f64, y: f64) -> f64 {
+pub fn dlapy2(
+    x: f64,
+    y: f64,
+) -> f64 {
     if x.is_nan() { return x; }
     if y.is_nan() { return y; }
 

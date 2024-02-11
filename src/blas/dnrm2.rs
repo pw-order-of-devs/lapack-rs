@@ -1,4 +1,4 @@
-use crate::dlamch::dlamch;
+use crate::array::AsFortranArray;
 
 /// DNRM2
 ///
@@ -24,11 +24,15 @@ use crate::dlamch::dlamch;
 /// If `incx` = 0, `x` isn't a vector so there is no need to call
 /// this function. If you call it anyway, it will count `x(1)`
 /// in the vector norm `n` times.
-pub fn dnrm2(
+pub fn dnrm2<X>(
     n: i32,
-    x: &Vec<f64>,
+    x: &X,
     incx: i32,
-) -> f64 {
+) -> f64 where
+    X: AsFortranArray,
+{
+    let x = x.to_fortran_array();
+
     // Blue's scaling constants.
     let tsml: f64 = (f64::RADIX as f64).powf((f64::MIN_EXP as f64 - 1.) * 0.5);
     let tbig: f64 = (f64::RADIX as f64).powf((f64::MAX_EXP as f64 - f64::DIGITS as f64 + 1.) * 0.5);
@@ -42,14 +46,11 @@ pub fn dnrm2(
     let mut asml = 0.;
     let mut amed = 0.;
     let mut abig = 0.;
-    let mut ix = 0;
+    let mut ix = 1;
     if incx < 0 { ix = 1 - (n-1) * incx; }
 
-    let safmin = dlamch('S') / dlamch('E');
-    for _ in 0..n {
-        let ax =
-            if ix < x.len() as i32 { x[ix as usize].abs() }
-            else { safmin };
+    for _ in 1..=n {
+        let ax = x[ix].abs();
         if ax > tbig {
             abig = abig + (ax*sbig).powf(2.);
             notbig = false;
@@ -109,4 +110,8 @@ mod tests {
         #[case] expected: f64) {
         assert!((dnrm2(n, &vectors, incx) - expected).abs() < 1e-15);
     }
+}
+
+#[test] fn test() {
+    dnrm2(2, &vec![2., 3.], 1);
 }

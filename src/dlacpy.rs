@@ -1,3 +1,5 @@
+use crate::array::{AsFortranArray, FortranArray};
+
 /// DLACPY
 ///
 /// # Documentation
@@ -10,30 +12,38 @@
 /// # Arguments
 ///
 /// For arguments definitions, please refer to the original documentation.
-pub fn dlacpy(
+pub fn dlacpy<A, B>(
     uplo: char,
-    m: usize,
-    n: usize,
-    a: &Vec<Vec<f64>>,
-    b: &mut Vec<Vec<f64>>,
-) {
+    m: i32,
+    n: i32,
+    a: &A,
+    b: &mut B,
+) where
+    A: AsFortranArray,
+    B: AsFortranArray + From<FortranArray>,
+{
+    let a_f = &a.to_fortran_array();
+    let b_f = &mut b.to_fortran_array();
+
     match uplo {
-        'U' => for i in 0..n {
-            for j in i..m {
-                b[i][j] = a[i][j];
+        'U' => for i in 1..=n {
+            for j in i..=m {
+                b_f[(i, j)] = a_f[(i, j)];
             }
         },
-        'L' => for i in 0..n {
-            for j in 0..=i {
-                b[i][j] = a[i][j];
+        'L' => for i in 1..=n {
+            for j in 1..=i {
+                b_f[(i, j)] = a_f[(i, j)];
             }
         },
-        _ => for i in 0..n {
-            for j in 0..m {
-                b[i][j] = a[i][j];
+        _ => for i in 1..=n {
+            for j in 1..=m {
+                b_f[(i, j)] = a_f[(i, j)];
             }
         }
     }
+
+    *b = B::from(b_f.clone());
 }
 
 #[cfg(test)]

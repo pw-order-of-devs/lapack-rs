@@ -19,7 +19,10 @@ use std::process;
 /// # Arguments
 ///
 /// For arguments definitions, please refer to the original documentation.
-pub fn xerbla(srname: &str, info: i32) {
+pub fn xerbla(
+    srname: &str,
+    info: i32,
+) {
     println!("** On entry to {} parameter number {} had an illegal value", srname, info);
     process::exit(1);
 }

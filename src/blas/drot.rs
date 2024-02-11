@@ -1,3 +1,5 @@
+use crate::array::{AsFortranArray, FortranArray};
+
 /// DROT
 ///
 /// # Documentation
@@ -16,30 +18,46 @@
 /// * `incy` - Integer. The storage spacing between elements of dy.
 /// * `c` - `f64` scalar.
 /// * `s` - `f64` scalar.
-pub fn drot(n: i32, dx: &mut Vec<f64>, incx: isize, dy: &mut Vec<f64>, incy: isize, c: f64, s: f64) {
-    if n <= 0 { return; }
+pub fn drot<DX, DY>(
+    n: i32,
+    dx: &mut DX,
+    incx: i32,
+    dy: &mut DY,
+    incy: i32,
+    c: f64,
+    s: f64,
+) where
+    DX: AsFortranArray + From<FortranArray>,
+    DY: AsFortranArray + From<FortranArray>,
+{
+    let dx_f = &mut dx.to_fortran_array();
+    let dy_f = &mut dy.to_fortran_array();
 
+    if n <= 0 { return; }
     if incx == 1 && incy == 1 {
         // code for both increments equal to 1
-        for i in 0..n as usize {
-            let dtemp = c * dx[i] + s * dy[i];
-            dy[i] = c * dy[i] - s * dx[i];
-            dx[i] = dtemp;
+        for i in 1..=n {
+            let dtemp = c * dx_f[i] + s * dy_f[i];
+            dy_f[i] = c * dy_f[i] - s * dx_f[i];
+            dx_f[i] = dtemp;
         }
     } else {
         // code for unequal increments or equal increments not equal to 1
-        let mut ix = 0;
-        let mut iy = 0;
-        if incx < 0 { ix = (n as isize - 1) * incx + 1; }
-        if incy < 0 { iy = (n as isize - 1) * incy + 1; }
-        for _ in 0..n {
-            let dtemp = c * dx[ix as usize] + s * dy[iy as usize];
-            dy[iy as usize] = c * dy[iy as usize] - s * dx[ix as usize];
-            dx[ix as usize] = dtemp;
+        let mut ix = 1;
+        let mut iy = 1;
+        if incx < 0 { ix = (-n + 1) * incx + 1; }
+        if incy < 0 { iy = (-n + 1) * incy + 1; }
+        for _ in 1..=n {
+            let dtemp = c * dx_f[ix] + s * dy_f[iy];
+            dy_f[iy] = c * dy_f[iy] - s * dx_f[ix];
+            dx_f[ix] = dtemp;
             ix += incx;
             iy += incy;
         }
     }
+
+    *dx = DX::from(dx_f.clone());
+    *dy = DY::from(dy_f.clone());
 }
 
 #[cfg(test)]
@@ -56,9 +74,9 @@ mod tests {
     fn test_drot(
         #[case] n: i32,
         #[case] mut dx: Vec<f64>,
-        #[case] incx: isize,
+        #[case] incx: i32,
         #[case] mut dy: Vec<f64>,
-        #[case] incy: isize,
+        #[case] incy: i32,
         #[case] c: f64,
         #[case] s: f64,
         #[case] expected_dx: Vec<f64>,

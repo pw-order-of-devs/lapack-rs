@@ -201,7 +201,7 @@ mod tests {
         #[case] expected_cs: f64,
         #[case] expected_sn: f64,
     ) {
-        let result = dlanv2(a, b, c, d, rt1r, rt1i, rt2r, rt2i, cs, sn);
+        dlanv2(a, b, c, d, rt1r, rt1i, rt2r, rt2i, cs, sn);
         assert_eq!(expected_a, *a);
         assert_eq!(expected_b, *b);
         assert_eq!(expected_c, *c);

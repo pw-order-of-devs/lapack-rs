@@ -67,6 +67,10 @@ impl std::ops::Index<i32> for FortranArray {
 
     fn index(&self, index: i32) -> &Self::Output {
         assert!(self.is_1d());
+        if index == 0 {
+            return &f64::MIN_POSITIVE;
+        }
+
         if let Some(value) = self.data.get(index as usize - 1) {
             &value
         } else {
@@ -78,6 +82,10 @@ impl std::ops::Index<i32> for FortranArray {
 impl std::ops::IndexMut<i32> for FortranArray {
     fn index_mut(&mut self, index: i32) -> &mut Self::Output {
         assert!(self.is_1d());
+        if index == 0 {
+            return &mut self.default_value;
+        }
+
         if let Some(value) = self.data.get_mut(index as usize - 1) {
             value
         } else {
@@ -91,7 +99,7 @@ impl std::ops::Index<(i32, i32)> for FortranArray {
 
     fn index(&self, index: (i32, i32)) -> &Self::Output {
         assert!(self.is_2d());
-        let index = ((index.0 - 1) * self.cols + (index.1 - 1)) as usize;
+        let index = ((index.1 - 1) * self.cols + (index.0 - 1)) as usize;
 
         if let Some(value) = self.data.get(index) {
             value
@@ -104,13 +112,24 @@ impl std::ops::Index<(i32, i32)> for FortranArray {
 impl std::ops::IndexMut<(i32, i32)> for FortranArray {
     fn index_mut(&mut self, index: (i32, i32)) -> &mut Self::Output {
         assert!(self.is_2d());
-        let (row, col) = index;
+        let (col, row) = index;
         let index = ((row - 1) * self.cols + (col - 1)) as usize;
 
         if let Some(value) = self.data.get_mut(index) {
             value
         } else {
             &mut self.default_value
+        }
+    }
+}
+
+impl From<f64> for FortranArray {
+    fn from(data: f64) -> Self {
+        FortranArray {
+            data: vec![data],
+            rows: 1,
+            cols: 0,
+            default_value: f64::NAN,
         }
     }
 }
@@ -159,6 +178,12 @@ impl From<FortranArray> for Vec<f64> {
     }
 }
 
+impl From<FortranArray> for f64 {
+    fn from(array: FortranArray) -> Self {
+        array.data[0]
+    }
+}
+
 impl PartialEq for FortranArray {
     fn eq(&self, other: &Self) -> bool {
         self.rows == other.rows
@@ -176,7 +201,7 @@ impl std::fmt::Debug for FortranArray {
                 if i != 0 { write!(f, ", ")?; }
                 write!(f, "{:.1}", value)?;
             }
-            write!(f, "]")
+            write!(f, "]\n")
         } else {
             // 2D Matrix
             for row in 0..self.rows {
@@ -269,6 +294,12 @@ mod tests {
 
 pub trait AsFortranArray {
     fn to_fortran_array(&self) -> FortranArray;
+}
+
+impl AsFortranArray for f64 {
+    fn to_fortran_array(&self) -> FortranArray {
+        FortranArray::from(vec![self.clone()])
+    }
 }
 
 impl AsFortranArray for Vec<f64> {

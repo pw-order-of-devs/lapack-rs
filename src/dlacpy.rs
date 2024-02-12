@@ -26,18 +26,18 @@ pub fn dlacpy<A, B>(
     let b_f = &mut b.to_fortran_array();
 
     match uplo {
-        'U' => for i in 1..=n {
-            for j in i..=m {
+        'U' => for j in 1..=n {
+            for i in j..=m {
                 b_f[(i, j)] = a_f[(i, j)];
             }
         },
-        'L' => for i in 1..=n {
-            for j in 1..=i {
+        'L' => for j in 1..=n {
+            for i in 1..=j {
                 b_f[(i, j)] = a_f[(i, j)];
             }
         },
-        _ => for i in 1..=n {
-            for j in 1..=m {
+        _ => for j in 1..=n {
+            for i in 1..=m {
                 b_f[(i, j)] = a_f[(i, j)];
             }
         }

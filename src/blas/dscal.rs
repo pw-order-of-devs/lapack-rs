@@ -1,4 +1,4 @@
-use crate::array::{AsFortranArray, FortranArray};
+use crate::array::{convert::ToFortranArray, FortranArray};
 
 /// DSCAL
 ///
@@ -23,7 +23,7 @@ pub fn dscal<DX>(
     dx: &mut DX,
     incx: i32,
 ) where
-    DX: AsFortranArray + From<FortranArray>,
+    DX: ToFortranArray + From<FortranArray>,
 {
     let dx_f = &mut dx.to_fortran_array();
 

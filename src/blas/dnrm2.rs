@@ -1,4 +1,4 @@
-use crate::array::AsFortranArray;
+use crate::array::convert::ToFortranArray;
 
 /// DNRM2
 ///
@@ -29,7 +29,7 @@ pub fn dnrm2<X>(
     x: &X,
     incx: i32,
 ) -> f64 where
-    X: AsFortranArray,
+    X: ToFortranArray,
 {
     let x = x.to_fortran_array();
 

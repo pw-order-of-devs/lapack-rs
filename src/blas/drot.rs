@@ -1,4 +1,4 @@
-use crate::array::{AsFortranArray, FortranArray};
+use crate::array::{convert::ToFortranArray, FortranArray};
 
 /// DROT
 ///
@@ -27,8 +27,8 @@ pub fn drot<DX, DY>(
     c: f64,
     s: f64,
 ) where
-    DX: AsFortranArray + From<FortranArray>,
-    DY: AsFortranArray + From<FortranArray>,
+    DX: ToFortranArray + From<FortranArray>,
+    DY: ToFortranArray + From<FortranArray>,
 {
     let dx_f = &mut dx.to_fortran_array();
     let dy_f = &mut dy.to_fortran_array();

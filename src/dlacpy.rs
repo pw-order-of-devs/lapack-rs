@@ -1,4 +1,4 @@
-use crate::array::{AsFortranArray, FortranArray};
+use crate::array::{convert::ToFortranArray, FortranArray};
 
 /// DLACPY
 ///
@@ -19,8 +19,8 @@ pub fn dlacpy<A, B>(
     a: &A,
     b: &mut B,
 ) where
-    A: AsFortranArray,
-    B: AsFortranArray + From<FortranArray>,
+    A: ToFortranArray,
+    B: ToFortranArray + From<FortranArray>,
 {
     let a_f = &a.to_fortran_array();
     let b_f = &mut b.to_fortran_array();

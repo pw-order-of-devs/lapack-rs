@@ -1,4 +1,4 @@
-use crate::array::{FortranArray, AsFortranArray};
+use crate::array::{convert::ToFortranArray, FortranArray};
 
 /// DCOPY
 ///
@@ -21,11 +21,11 @@ pub fn dcopy<DX, DY>(
     n: i32,
     dx: &DX,
     incx: i32,
-    mut dy: &mut DY,
+    dy: &mut DY,
     incy: i32,
 ) where
-    DX: AsFortranArray,
-    DY: AsFortranArray + From<FortranArray>,
+    DX: ToFortranArray,
+    DY: ToFortranArray + From<FortranArray>,
 {
     let dx = dx.to_fortran_array();
     let dy_f = &mut dy.to_fortran_array();

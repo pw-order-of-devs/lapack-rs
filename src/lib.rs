@@ -2,6 +2,7 @@ pub mod array;
 pub mod blas;
 
 pub mod dlacpy;
+pub mod dlahqr;
 pub mod dlamch;
 pub mod dlanv2;
 pub mod dlapy2;

@@ -18,34 +18,34 @@ pub fn dlanv2(
     b: &mut f64,
     c: &mut f64,
     d: &mut f64,
-    mut rt1r: &mut f64,
-    mut rt1i: &mut f64,
-    mut rt2r: &mut f64,
-    mut rt2i: &mut f64,
-    mut cs: &mut f64,
-    mut sn: &mut f64,
+    rt1r: &mut f64,
+    rt1i: &mut f64,
+    rt2r: &mut f64,
+    rt2i: &mut f64,
+    cs: &mut f64,
+    sn: &mut f64,
 ) {
     let multpl = 4.;
     let safmin = dlamch('S');
     let eps = dlamch('P');
-    let safmn2 = dlamch('B').powf((safmin / eps).log(dlamch('B')) / 2.0).trunc();
-    let safmx2 = 1.0 / safmn2;
+    let safmn2 = dlamch('B').powf((safmin / eps).log(dlamch('B')) / 2.).trunc();
+    let safmx2 = 1. / safmn2;
 
-    if *c == 0.0 {
-        *cs = 1.0;
-        *sn = 0.0;
-    } else if *b == 0.0 {
-        *cs = 0.0;
-        *sn = 1.0;
+    if *c == 0. {
+        *cs = 1.;
+        *sn = 0.;
+    } else if *b == 0. {
+        *cs = 0.;
+        *sn = 1.;
         let temp = *d;
         *d = *a;
         *a = temp;
         *b = -(*c);
-        *c = 0.0;
+        *c = 0.;
     } else if (*a - *d).abs() < f64::EPSILON
         && b.signum() != c.signum() {
-        *cs = 1.0;
-        *sn = 0.0;
+        *cs = 1.;
+        *sn = 0.;
     } else {
         let mut temp = *a - *d;
         let p = 0.5 * temp;
@@ -65,8 +65,8 @@ pub fn dlanv2(
             *cs = z / tau;
             *sn = *c / tau;
             *b = *b - *c;
-            *c = 0.0;
-
+            *c = 0.;
+        } else {
             let mut count = 0;
             let mut sigma = *b + *c;
 
@@ -96,7 +96,7 @@ pub fn dlanv2(
             let p = 0.5 * temp;
             let tau = dlapy2(sigma, temp);
             *cs = ((1f64 + sigma.abs() / tau) * 0.5).sqrt();
-            *sn = -(p / (tau * *cs)).copysign(1f64 * sigma.signum());
+            *sn = -(p / (tau * *cs)) * sigma.signum();
 
             // Compute [ AA  BB ] = [ A  B ] [ CS -SN ]
             //         [ CC  DD ]   [ C  D ] [ SN  CS ]
@@ -109,25 +109,25 @@ pub fn dlanv2(
             //         [ C  D ]   [-SN  CS ] [ CC  DD ]
             *a = aa * *cs + cc * *sn;
             *b = bb * *cs + dd * *sn;
-            *c = -(aa * *sn) - cc * *cs;
+            *c = -(aa * *sn) + cc * *cs;
             *d = -(bb * *sn) + dd * *cs;
 
             temp = 0.5 * (*a + *d);
             *a = temp;
             *d = temp;
 
-            if *c != 0.0 {
-                if *b != 0.0 {
-                    if 1.0_f64.copysign(*b) == 1.0_f64.copysign(*c) {
+            if *c != 0. {
+                if *b != 0. {
+                    if b.signum() == c.signum() {
                         // Real eigenvalues: reduce to upper triangular form
                         let sab = b.abs().sqrt();
                         let sac = c.abs().sqrt();
-                        let p = (sab * sac).copysign(*c);
-                        let tau = 1.0 / (*b + *c).abs().sqrt();
+                        let p = c.signum() * sab * sac;
+                        let tau = 1. / (*b + *c).abs().sqrt();
                         *a = temp + p;
                         *d = temp - p;
                         *b = *b - *c;
-                        *c = 0.0;
+                        *c = 0.;
                         let cs1 = sab * tau;
                         let sn1 = sac * tau;
                         let temp = *cs * cs1 - *sn * sn1;
@@ -136,7 +136,7 @@ pub fn dlanv2(
                     }
                 } else {
                     *b = -*c;
-                    *c = 0.0;
+                    *c = 0.;
                     let temp = *cs;
                     *cs = -(*sn);
                     *sn = temp;
@@ -148,9 +148,9 @@ pub fn dlanv2(
     *rt1r = *a;
     *rt2r = *d;
 
-    if *c == 0.0 {
-        *rt1i = 0.0;
-        *rt2i = 0.0;
+    if *c == 0. {
+        *rt1i = 0.;
+        *rt2i = 0.;
     } else {
         *rt1i = b.abs().sqrt() * c.abs().sqrt();
         *rt2i = -(*rt1i);
@@ -164,20 +164,22 @@ mod tests {
 
     #[rstest]
     #[case(
-        &mut 1.0, &mut 2.0, &mut 3.0, &mut 4.0, &mut 5.0, &mut 6.0, &mut 7.0, &mut 8.0, &mut 9.0, &mut 10.0,
-        2.5, 2.066771435679323, -2.0298221281347035, 2.5, 2.5, 2.048213463957949, 2.5, -2.048213463957949, 0.8112421851755609, 0.5847102846637648,
+        &mut 1., &mut 2., &mut 3., &mut 4., &mut 5., &mut 6., &mut 7., &mut 8.,
+        -0.3722813232690143, -1., 0., 5.372281323269014, -0.3722813232690143, 0., 5.372281323269014, 0., -0.824564840132393848, 0.56576746496899233
     )]
     #[case(
-        &mut 7.0, &mut 10.0, &mut 5.0, &mut 6.0, &mut 11.0, &mut 12.0, &mut 8.0, &mut 9.0, &mut 13.0, &mut 14.0,
-        9.28858224651085, 5.11545816559625, 0., 3.7114177534891506, 9.28858224651085, 0., 3.7114177534891506, 0., 0.950617193895293, 0.3103658336071141,
+        &mut 7., &mut 10., &mut 5., &mut 6., &mut 11., &mut 12., &mut 8., &mut 9.,
+        13.588723439378914, 5., 0., -0.58872343937891181, 13.588723439378914, 0., -0.58872343937891181, 0., 0.83504205669979814, 0.55018611718451338,
     )]
     #[case(
-        &mut 6.0, &mut 12.0, &mut 13.0, &mut 7.0, &mut 10.0, &mut 14.0, &mut 11.0, &mut 8.0, &mut 9.0, &mut 15.0,
-        6.500000000000001, 7.985281374238571, -4.449747468305834, 6.500000000000001, 6.500000000000001, 5.960913149738705, 6.500000000000001, -5.960913149738705, 0.9238795325112867, 0.3826834323650898,
+        &mut 6., &mut 12., &mut 13., &mut 7., &mut 10., &mut 14., &mut 11., &mut 8.,
+        -6., -1., 0., 19., -6., 0., 19., 0., -0.7071067811865475, 0.7071067811865475,
     )]
     #[case(
-        &mut 10.0, &mut 15.0, &mut 16.0, &mut 17.0, &mut 11.0, &mut 14.0, &mut 18.0, &mut 12.0, &mut 13.0, &mut 19.0,
-        13.5, 15.152043533532684, -12.935028842544403, 13.5, 13.5, 13.99971857323331, 13.5, -13.99971857323331, 0.7554539549957063, 0.6552017413601289,
+        &mut -0.35413764185334262, &mut -0.56298456891977766, &mut 1.4015621918790930, &mut 0.51543733986900975, &mut 1., &mut 1., &mut 2., &mut 2.,
+        0.08064984900783352, -0.37825080661482813, 1.5862959541840427, 0.08064984900783352,
+        0.08064984900783352, 0.774608110078866, 0.08064984900783352, -0.774608110078866,
+        0.9203697166177524, 0.39104933797790564,
     )]
     fn test_dlanv2(
         #[case] a: &mut f64,
@@ -188,8 +190,6 @@ mod tests {
         #[case] rt1i: &mut f64,
         #[case] rt2r: &mut f64,
         #[case] rt2i: &mut f64,
-        #[case] cs: &mut f64,
-        #[case] sn: &mut f64,
         #[case] expected_a: f64,
         #[case] expected_b: f64,
         #[case] expected_c: f64,
@@ -201,6 +201,7 @@ mod tests {
         #[case] expected_cs: f64,
         #[case] expected_sn: f64,
     ) {
+        let (mut cs, mut sn) = (&mut 0., &mut 0.);
         dlanv2(a, b, c, d, rt1r, rt1i, rt2r, rt2i, cs, sn);
         assert_eq!(expected_a, *a);
         assert_eq!(expected_b, *b);

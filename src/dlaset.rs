@@ -1,4 +1,4 @@
-use crate::array::{AsFortranArray, FortranArray};
+use crate::array::{convert::ToFortranArray, FortranArray};
 
 /// DLASET
 ///
@@ -20,7 +20,7 @@ pub fn dlaset<A>(
     beta: f64,
     a: &mut A,
 ) where
-    A: AsFortranArray + From<FortranArray>,
+    A: ToFortranArray + From<FortranArray>,
 {
     let a_f = &mut a.to_fortran_array();
 

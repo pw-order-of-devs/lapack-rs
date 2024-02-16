@@ -38,10 +38,10 @@ pub fn dlahqr<H, WR, WI, Z>(
     WI: ToFortranArray + From<FortranArray>,
     Z: ToFortranArray + From<FortranArray>,
 {
-    let mut h_f = &mut h.to_fortran_array();
-    let mut wr_f = &mut wr.to_fortran_array();
-    let mut wi_f = &mut wi.to_fortran_array();
-    let mut z_f = &mut z.to_fortran_array();
+    let h_f = &mut h.to_fortran_array();
+    let wr_f = &mut wr.to_fortran_array();
+    let wi_f = &mut wi.to_fortran_array();
+    let z_f = &mut z.to_fortran_array();
 
     *info = 0;
     let (dat1, dat2) = (3. / 4., -0.4375);

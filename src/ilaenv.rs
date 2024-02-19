@@ -15,6 +15,7 @@ use crate::iparmq::iparmq;
 pub(crate) fn ilaenv(
     ispec: i32,
     name: &str,
+    _opts: &str,
     n1: i32,
     n2: i32,
     n3: i32,
@@ -196,6 +197,6 @@ mod tests {
         #[case] n4: i32,
         #[case] expected: i32,
     ) {
-        assert_eq!(expected, ilaenv(ispec, name, n1, n2, n3, n4));
+        assert_eq!(expected, ilaenv(ispec, name, "", n1, n2, n3, n4));
     }
 }

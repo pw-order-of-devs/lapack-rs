@@ -6,6 +6,7 @@ pub mod dlahqr;
 pub mod dlamch;
 pub mod dlanv2;
 pub mod dlapy2;
+pub mod dlaqr1;
 pub mod dlarfg;
 pub mod dlaset;
 pub mod ieeeck;

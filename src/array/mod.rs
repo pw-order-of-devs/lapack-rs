@@ -61,28 +61,37 @@ impl FortranArray {
         }
     }
 
-    pub fn insert(&mut self, index: i32, value: f64) {
-        assert!(self.is_1d());
+    pub(crate) fn insert(&mut self, index: i32, value: f64) {
         if index >= 1 && index < self.len() {
             self.data.insert(index as usize - 1, value)
         }
     }
 
-    pub fn idx(&self, index: (i32, i32)) -> i32 {
+    pub(crate) fn idx(&self, index: (i32, i32)) -> i32 {
         (index.1 - 1) * self.rows + index.0
     }
 
-    pub fn len(&self) -> i32 {
+    pub(crate) fn len(&self) -> i32 {
         if self.is_2d() { self.rows * self.cols }
         else { self.rows }
     }
 
-    fn is_1d(&self) -> bool {
+    pub(crate) fn is_1d(&self) -> bool {
         self.cols == 0
     }
 
-    fn is_2d(&self) -> bool {
+    pub(crate) fn is_2d(&self) -> bool {
         self.rows > 0 && self.cols > 0
+    }
+
+    pub(crate) fn as_2d(&mut self, rows: i32) {
+        let len = self.data.len() as i32;
+        self.rows = rows;
+        self.cols = len / rows;
+    }
+
+    pub(crate) fn to_vec(self) -> Vec<f64> {
+        self.data
     }
 }
 

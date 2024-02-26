@@ -47,8 +47,8 @@ pub fn dtrmm<A, B>(
     A: ToFortranArray + From<FortranArray>,
     B: ToFortranArray + From<FortranArray>,
 {
-    let a_f = &mut a.to_fortran_array();
-    let b_f = &mut b.to_fortran_array();
+    let a_f = &mut a.to_fa();
+    let b_f = &mut b.to_fa();
 
     let lside = lsame(side, 'L');
     let nrowa = if lside { m } else { n };

@@ -43,9 +43,9 @@ pub fn dgemm<A, B, C>(
     B: ToFortranArray,
     C: ToFortranArray + From<FortranArray>,
 {
-    let a_f = a.to_fortran_array();
-    let b_f = b.to_fortran_array();
-    let c_f = &mut c.to_fortran_array();
+    let a_f = &mut a.to_fa_2d(lda);
+    let b_f = &mut b.to_fa_2d(ldb);
+    let c_f = &mut c.to_fa_2d(ldc);
 
     let nota = lsame(transa, 'N');
     let notb = lsame(transb, 'N');
@@ -93,7 +93,7 @@ pub fn dgemm<A, B, C>(
         } else {
             for j in 1..=n {
                 for i in 1..=m {
-                    c_f[(i, j)] = beta;
+                    c_f[(i, j)] *= beta;
                 }
             }
         }
@@ -102,7 +102,6 @@ pub fn dgemm<A, B, C>(
     }
 
     // Start the operations.
-    let mut temp;
     if notb {
         if nota {
             // Form  C := alpha*A*B + beta*C.
@@ -117,7 +116,7 @@ pub fn dgemm<A, B, C>(
                     }
                 }
                 for l in 1..=k {
-                    temp = alpha * b_f[(l, j)];
+                    let temp = alpha * b_f[(l, j)];
                     for i in 1..=m {
                         c_f[(i, j)] += temp * a_f[(i, l)];
                     }
@@ -127,7 +126,7 @@ pub fn dgemm<A, B, C>(
             // Form  C := alpha*A**T*B + beta*C
             for j in 1..=n {
                 for i in 1..=m {
-                    temp = 0.;
+                    let mut temp = 0.;
                     for l in 1..=k {
                         temp += a_f[(l, i)] * b_f[(l, j)];
                     }
@@ -152,7 +151,7 @@ pub fn dgemm<A, B, C>(
                 }
             }
             for l in 1..=k {
-                temp = alpha * b_f[(j, l)];
+                let temp = alpha * b_f[(j, l)];
                 for i in 1..=m {
                     c_f[(i, j)] += temp * a_f[(i, l)];
                 }
@@ -162,7 +161,7 @@ pub fn dgemm<A, B, C>(
         // Form  C := alpha*A**T*B**T + beta*C
         for j in 1..=n {
             for i in 1..=m {
-                temp = 0.;
+                let mut temp = 0.;
                 for l in 1..=k {
                     temp += a_f[(l, i)] * b_f[(j, l)];
                 }

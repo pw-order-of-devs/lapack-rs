@@ -30,8 +30,8 @@ pub fn drot<DX, DY>(
     DX: ToFortranArray + From<FortranArray>,
     DY: ToFortranArray + From<FortranArray>,
 {
-    let dx_f = &mut dx.to_fortran_array();
-    let dy_f = &mut dy.to_fortran_array();
+    let dx_f = &mut dx.to_fa();
+    let dy_f = &mut dy.to_fa();
 
     if n <= 0 { return; }
     if incx == 1 && incy == 1 {

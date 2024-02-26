@@ -57,29 +57,54 @@ impl From<FortranArray> for Vec<Vec<f64>> {
 }
 
 pub trait ToFortranArray {
-    fn to_fortran_array(&self) -> FortranArray;
+    fn to_fa(&self) -> FortranArray;
+    fn to_fa_2d(&self, ld: i32) -> FortranArray;
 }
 
 impl ToFortranArray for &[f64] {
-    fn to_fortran_array(&self) -> FortranArray {
+
+    fn to_fa(&self) -> FortranArray {
         FortranArray::from(self.to_vec())
+    }
+
+    fn to_fa_2d(&self, ld: i32) -> FortranArray {
+        let array = &mut FortranArray::from(self.to_vec());
+        array.as_2d(ld);
+        array.clone()
     }
 }
 
 impl ToFortranArray for Vec<f64> {
-    fn to_fortran_array(&self) -> FortranArray {
+
+    fn to_fa(&self) -> FortranArray {
         FortranArray::from(self.clone())
+    }
+
+    fn to_fa_2d(&self, ld: i32) -> FortranArray {
+        let array = &mut FortranArray::from(self.clone());
+        array.as_2d(ld);
+        array.clone()
     }
 }
 
 impl ToFortranArray for Vec<Vec<f64>> {
-    fn to_fortran_array(&self) -> FortranArray {
+
+    fn to_fa(&self) -> FortranArray {
+        FortranArray::from(self.clone())
+    }
+
+    fn to_fa_2d(&self, _ld: i32) -> FortranArray {
         FortranArray::from(self.clone())
     }
 }
 
 impl ToFortranArray for FortranArray {
-    fn to_fortran_array(&self) -> FortranArray {
+
+    fn to_fa(&self) -> FortranArray {
+        self.clone()
+    }
+
+    fn to_fa_2d(&self, _ld: i32) -> FortranArray {
         self.clone()
     }
 }

@@ -24,7 +24,7 @@ use crate::array::FortranArray;
 pub fn dlaqr1<H, V>(
     n: i32,
     h: &H,
-    _ldh: i32,
+    ldh: i32,
     sr1: f64,
     si1: f64,
     sr2: f64,
@@ -34,8 +34,8 @@ pub fn dlaqr1<H, V>(
     H: ToFortranArray,
     V: ToFortranArray + From<FortranArray>,
 {
-    let h_f = h.to_fortran_array();
-    let v_f = &mut v.to_fortran_array();
+    let h_f = &mut h.to_fa_2d(ldh);
+    let v_f = &mut v.to_fa();
 
     if n != 2 && n != 3 { return; }
 

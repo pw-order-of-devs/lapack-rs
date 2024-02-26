@@ -17,13 +17,15 @@ pub fn dlacpy<A, B>(
     m: i32,
     n: i32,
     a: &A,
+    lda: i32,
     b: &mut B,
+    ldb: i32,
 ) where
     A: ToFortranArray,
     B: ToFortranArray + From<FortranArray>,
 {
-    let a_f = &a.to_fortran_array();
-    let b_f = &mut b.to_fortran_array();
+    let a_f = &a.to_fa_2d(lda);
+    let b_f = &mut b.to_fa_2d(ldb);
 
     match uplo {
         'U' => for j in 1..=n {
@@ -63,7 +65,7 @@ mod tests {
             vec![0.0, 0.0, 0.0],
         ];
 
-        dlacpy('U', 3, 3, &a, &mut b);
+        dlacpy('U', 3, 3, &a, 3, &mut b, 3);
         assert_eq!(b, vec![
             vec![1.0, 2.0, 3.0],
             vec![0.0, 5.0, 6.0],
@@ -84,7 +86,7 @@ mod tests {
             vec![0.0, 0.0, 0.0],
         ];
 
-        dlacpy('L', 3, 3, &a, &mut b);
+        dlacpy('L', 3, 3, &a, 3, &mut b, 3);
         assert_eq!(b, vec![
             vec![1.0, 0.0, 0.0],
             vec![4.0, 5.0, 0.0],
@@ -105,7 +107,7 @@ mod tests {
             vec![0.0, 0.0, 0.0],
         ];
 
-        dlacpy('A', 3, 3, &a, &mut b);
+        dlacpy('A', 3, 3, &a, 3, &mut b, 3);
         assert_eq!(a, b);
     }
 }

@@ -38,10 +38,10 @@ pub fn dlahqr<H, WR, WI, Z>(
     WI: ToFortranArray + From<FortranArray>,
     Z: ToFortranArray + From<FortranArray>,
 {
-    let h_f = &mut h.to_fortran_array();
-    let wr_f = &mut wr.to_fortran_array();
-    let wi_f = &mut wi.to_fortran_array();
-    let z_f = &mut z.to_fortran_array();
+    let h_f = &mut h.to_fa();
+    let wr_f = &mut wr.to_fa();
+    let wi_f = &mut wi.to_fa();
+    let z_f = &mut z.to_fa();
 
     *info = 0;
     let (dat1, dat2) = (3. / 4., -0.4375);
@@ -84,7 +84,7 @@ pub fn dlahqr<H, WR, WI, Z>(
     let mut kdefl = 0;
     let mut i = ihi;
 
-    let mut v = FortranArray::vector(&vec![0.; 3]);
+    let mut v = vec![0.; 3].to_fa();
     let mut m = 0;
     let mut t1 = 0.;
     let mut nr;
@@ -249,7 +249,7 @@ pub fn dlahqr<H, WR, WI, Z>(
                 if k > m { dcopy(nr, &h_f[(k, k - 1)..].to_vec(), 1, &mut v, 1); }
                 let (v_1, v_2) = (
                     &mut v[1].clone(),
-                    &mut FortranArray::vector(&v[2..]));
+                    &mut v[2..].to_vec().to_fa());
                 dlarfg(nr, v_1, v_2, 1, &mut t1);
                 v = v_2.clone();
                 v.insert(1, v_1.clone());

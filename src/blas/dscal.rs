@@ -25,7 +25,7 @@ pub fn dscal<DX>(
 ) where
     DX: ToFortranArray + From<FortranArray>,
 {
-    let dx_f = &mut dx.to_fortran_array();
+    let dx_f = &mut dx.to_fa();
 
     if n <= 0 || incx <= 0 || da == 1.0 { return; }
     if incx == 1 {

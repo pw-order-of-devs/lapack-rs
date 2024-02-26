@@ -31,7 +31,7 @@ pub fn dnrm2<X>(
 ) -> f64 where
     X: ToFortranArray,
 {
-    let x = x.to_fortran_array();
+    let x = x.to_fa();
 
     // Blue's scaling constants.
     let tsml: f64 = (f64::RADIX as f64).powf((f64::MIN_EXP as f64 - 1.) * 0.5);

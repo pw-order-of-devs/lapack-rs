@@ -27,8 +27,8 @@ pub fn dcopy<DX, DY>(
     DX: ToFortranArray,
     DY: ToFortranArray + From<FortranArray>,
 {
-    let dx = dx.to_fortran_array();
-    let dy_f = &mut dy.to_fortran_array();
+    let dx = dx.to_fa();
+    let dy_f = &mut dy.to_fa();
 
     if n <= 0 { return; }
     if incx == 1 && incy == 1 {

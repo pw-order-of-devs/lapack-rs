@@ -22,7 +22,7 @@ pub fn dlaset<A>(
 ) where
     A: ToFortranArray + From<FortranArray>,
 {
-    let a_f = &mut a.to_fortran_array();
+    let a_f = &mut a.to_fa();
 
     match uplo {
         'U' => for j in 1..=n {

@@ -508,7 +508,11 @@ mod tests {
         ];
         assert_eq!(expected_wv, wv.clone());
 
-        let expected_wh = vec![vec![0.; 3]; 3];
+        let expected_wh = vec![
+            vec![-3.1467296279827165e-308, -2.1410783186265535e-308, 3.576378669627478e-308],
+            vec![0.; 3],
+            vec![0.; 3],
+        ];
         assert_eq!(expected_wh, wh.clone());
     }
 

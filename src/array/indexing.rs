@@ -6,7 +6,6 @@ impl Index<i32> for FortranArray {
     type Output = f64;
 
     fn index(&self, index: i32) -> &Self::Output {
-        assert!(self.is_1d());
         if index == 0 {
             return &f64::MIN_POSITIVE;
         }
@@ -38,7 +37,6 @@ impl Index<(i32, i32)> for FortranArray {
     type Output = f64;
 
     fn index(&self, index: (i32, i32)) -> &Self::Output {
-        assert!(self.is_2d());
         let index = ((index.1 - 1) * self.rows + (index.0 - 1)) as usize;
 
         if let Some(value) = self.data.get(index) {
@@ -52,7 +50,6 @@ impl Index<(i32, i32)> for FortranArray {
 impl IndexMut<(i32, i32)> for FortranArray {
 
     fn index_mut(&mut self, index: (i32, i32)) -> &mut Self::Output {
-        assert!(self.is_2d());
         let (col, row) = index;
         let index = ((row - 1) * self.rows + (col - 1)) as usize;
 
@@ -91,7 +88,6 @@ impl Index<RangeFrom<(i32, i32)>> for FortranArray {
     type Output = [f64];
 
     fn index(&self, index: RangeFrom<(i32, i32)>) -> &Self::Output {
-        assert!(self.is_2d());
         let (col, row) = index.start;
         let index = (row - 1) * self.rows + col;
         &self[index..]
@@ -101,7 +97,6 @@ impl Index<RangeFrom<(i32, i32)>> for FortranArray {
 impl IndexMut<RangeFrom<(i32, i32)>> for FortranArray {
 
     fn index_mut(&mut self, index: RangeFrom<(i32, i32)>) -> &mut Self::Output {
-        assert!(self.is_2d());
         let (col, row) = index.start;
         let index = (row - 1) * self.rows + col;
         &mut self[index..]

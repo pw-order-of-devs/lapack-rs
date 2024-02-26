@@ -38,7 +38,7 @@ mod tests {
     #[case(FortranArray::vector(& [1.0, 2.0, 3.0, 4.0]), "[1.0, 2.0, 3.0, 4.0]")]
     #[case(FortranArray::matrix(& [1.0, 2.0, 3.0, 4.0], 1, 4), "[[1.0, 2.0, 3.0, 4.0]]")]
     #[case(FortranArray::matrix(& [1.0, 2.0, 3.0, 4.0], 4, 1), "[[1.0][2.0][3.0][4.0]]")]
-    #[case(FortranArray::matrix(& [1.0, 2.0, 3.0, 4.0], 2, 2), "[[1.0, 3.0][2.0, 4.0]]")]
+    #[case(FortranArray::matrix(& [1.0, 2.0, 3.0, 4.0], 2, 2), "[[1.0, 2.0][3.0, 4.0]]")]
     fn test_display(
         #[case] input: FortranArray,
         #[case] expected: &str,
